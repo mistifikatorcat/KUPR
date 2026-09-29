@@ -1,26 +1,293 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #090909;
+  --foreground: #efefe9;
+  --muted: #777771;
+  --line: #292927;
+
+  /*
+   * Временный цвет.
+   * Потом возьмём акцент непосредственно из кота.
+   */
+  --signal: #d6ff43;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  margin: 0;
+  min-height: 100%;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+}
+
+button {
+  font: inherit;
+}
+
+.station {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  min-height: 100vh;
+
+  padding: 28px 32px 24px;
+
+  overflow: hidden;
+}
+
+.station::before {
+  content: "";
+
+  position: fixed;
+  inset: 0;
+
+  pointer-events: none;
+
+  opacity: 0.035;
+
+  background-image: url(
+    "data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='.8'/%3E%3C/svg%3E"
+  );
+}
+
+.station__header,
+.station__footer {
+  font-family: monospace;
+  font-size: 11px;
+  letter-spacing: 0.11em;
+}
+
+.station__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.station__identity {
+  display: flex;
+  gap: 16px;
+  align-items: baseline;
+}
+
+.station__name {
   font-family: Arial, Helvetica, sans-serif;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -0.06em;
+}
+
+.station__frequency {
+  color: var(--muted);
+}
+
+.station__status {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+
+  color: var(--signal);
+}
+
+.station__status-dot {
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: currentColor;
+
+  box-shadow: 0 0 10px currentColor;
+}
+
+.station__content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+
+  width: min(1100px, 100%);
+  margin: 0 auto;
+}
+
+.station__broadcast {
+  width: min(760px, 100%);
+}
+
+.station__eyebrow {
+  margin: 0 0 22px;
+
+  color: var(--muted);
+
+  font-family: monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+}
+
+.station__artist {
+  margin: 0;
+
+  font-size: clamp(56px, 9vw, 132px);
+  font-weight: 700;
+  line-height: 0.82;
+  letter-spacing: -0.07em;
+}
+
+.station__track {
+  margin: 14px 0 42px;
+
+  color: var(--muted);
+
+  font-size: clamp(28px, 4vw, 56px);
+  font-weight: 400;
+  letter-spacing: -0.04em;
+}
+
+.player {
+  display: flex;
+  align-items: center;
+
+  gap: 20px;
+}
+
+.player__button {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+  justify-content: space-between;
+
+  min-width: 190px;
+
+  padding: 14px 16px;
+
+  border: 1px solid var(--foreground);
+
+  background: transparent;
+  color: var(--foreground);
+
+  font-family: monospace;
+  font-size: 11px;
+
+  cursor: pointer;
+
+  transition:
+    background 120ms ease,
+    color 120ms ease;
+}
+
+.player__button:hover {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+.player__state {
+  color: var(--muted);
+
+  font-family: monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+}
+
+.station__visualizer {
+  display: flex;
+  align-items: flex-end;
+
+  gap: 4px;
+
+  height: 72px;
+  margin-top: 72px;
+}
+
+.station__visualizer span {
+  width: 100%;
+  height: var(--height);
+
+  background: var(--foreground);
+
+  opacity: 0.16;
+}
+
+.station__footer {
+  display: flex;
+  justify-content: space-between;
+
+  padding-top: 18px;
+
+  border-top: 1px solid var(--line);
+
+  color: var(--muted);
+}
+
+.station__footer div {
+  display: flex;
+  gap: 24px;
+}
+
+@media (max-width: 700px) {
+  .station {
+    padding: 20px;
+  }
+
+  .station__frequency {
+    display: none;
+  }
+
+  .station__status {
+    font-size: 9px;
+  }
+
+  .station__content {
+    justify-content: flex-end;
+
+    padding-bottom: 72px;
+  }
+
+  .station__artist {
+    font-size: clamp(52px, 18vw, 90px);
+  }
+
+  .station__track {
+    margin-bottom: 32px;
+  }
+
+  .player {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .player__button {
+    width: 100%;
+  }
+
+  .station__visualizer {
+    height: 48px;
+    margin-top: 48px;
+  }
+
+  .station__footer > span {
+    display: none;
+  }
+
+  .station__footer div {
+    width: 100%;
+    justify-content: space-between;
+
+    gap: 8px;
+
+    font-size: 9px;
+  }
 }

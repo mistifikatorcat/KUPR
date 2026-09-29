@@ -1,4 +1,8 @@
-import { RadioPlayer } from "@/components/RadioPlayer";
+import { RadioPlayer } from "@/components/RadioPlayer"
+import { tracks } from "@/data/tracks";
+
+
+const currentTrack = tracks[0]
 
 export default function Home() {
   return (
@@ -19,8 +23,8 @@ export default function Home() {
         <div className="station__broadcast">
           <p className="station__eyebrow">NOW TRANSMITTING</p>
 
-          <h1 className="station__artist">Portishead</h1>
-          <p className="station__track">Roads</p>
+          <h1 className="station__artist">{currentTrack.artist}</h1>
+          <p className="station__track">{currentTrack.title}</p>
 
           <RadioPlayer />
         </div>
