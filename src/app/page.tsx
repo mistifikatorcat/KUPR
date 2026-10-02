@@ -1,10 +1,19 @@
-import { RadioPlayer } from "@/components/RadioPlayer"
+"use client";
+
+import { useState } from "react";
+
+import { RadioPlayer } from "@/components/RadioPlayer";
 import { tracks } from "@/data/tracks";
 
-
-const currentTrack = tracks[0]
-
 export default function Home() {
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+
+  const currentTrack = tracks[currentTrackIndex];
+
+  const handleNextTrack = () => {
+    setCurrentTrackIndex((index) => (index + 1) % tracks.length);
+  };
+
   return (
     <main className="station">
       <header className="station__header">
@@ -23,10 +32,18 @@ export default function Home() {
         <div className="station__broadcast">
           <p className="station__eyebrow">NOW TRANSMITTING</p>
 
-          <h1 className="station__artist">{currentTrack.artist}</h1>
-          <p className="station__track">{currentTrack.title}</p>
+          <h1 className="station__artist">
+            {currentTrack.artist}
+          </h1>
 
-          <RadioPlayer />
+          <p className="station__track">
+            {currentTrack.title}
+          </p>
+
+          <RadioPlayer
+            currentTrack={currentTrack}
+            onNextTrack={handleNextTrack}
+          />
         </div>
 
         <div className="station__visualizer" aria-hidden="true">
