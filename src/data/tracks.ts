@@ -41,7 +41,7 @@ export const tracks: Track[] = [
     },
      {
         id: "7",
-        artist: "Blue Ouster Cult",
+        artist: "Blue Oyster Cult",
         title: "(Don't fear) The Reaper",
         src: "/music/dontfearthereaper.mp3",
     },
