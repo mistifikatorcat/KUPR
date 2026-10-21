@@ -1,18 +1,70 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { RadioPlayer } from "@/components/RadioPlayer";
-import { tracks } from "@/data/tracks";
+
+type NowPlaying = {
+  artist: string;
+  title: string;
+  listeners: number;
+  isOnline: boolean;
+  bitrate: number | null;
+};
+
 
 export default function Home() {
-  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  // const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
 
-  const currentTrack = tracks[currentTrackIndex];
+  // const currentTrack = tracks[currentTrackIndex];
 
-  const handleNextTrack = () => {
-    setCurrentTrackIndex((index) => (index + 1) % tracks.length);
-  };
+  // const handleNextTrack = () => {
+  //   setCurrentTrackIndex((index) => (index + 1) % tracks.length);
+  // };
+
+  const [nowPlaying, setNowPlaying] = useState<NowPlaying | null>(null);
+
+  const [metadataError, setMetadataError] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+
+    const fetchNowPlaying = async () => {
+      try {
+        const response = await fetch("/api/now-playing", {
+          cache: "no-store",
+        });
+
+        if (!response.ok) {
+          throw new Error("Unable to fetch station data");
+        }
+
+        const data: NowPlaying = await response.json();
+
+        if (active) {
+          setNowPlaying(data);
+          setMetadataError(false);
+        }
+      } catch (error) {
+        console.error(error);
+        if (active) {
+          setNowPlaying(null);
+          setMetadataError(true);
+        }
+      }
+    };
+
+    void fetchNowPlaying();
+
+    const interval = setInterval(() => {
+      void fetchNowPlaying();
+    }, 10000);
+
+    return () => {
+      active = false;
+      clearInterval(interval);
+    };
+  }, []);
 
   return (
     <main className="station">
@@ -24,7 +76,13 @@ export default function Home() {
 
         <div className="station__status">
           <span className="station__status-dot" />
-          TRANSMISSION ACTIVE
+          {metadataError
+            ? "STATUS UNKNOWN"
+            : !nowPlaying
+              ? "CONNECTING..."
+              : nowPlaying.isOnline
+                ? "TRANSMISSION ACTIVE"
+                : "STATION OFFLINE"}
         </div>
       </header>
 
@@ -33,17 +91,18 @@ export default function Home() {
           <p className="station__eyebrow">NOW TRANSMITTING</p>
 
           <h1 className="station__artist">
-            {currentTrack.artist}
+            {nowPlaying?.isOnline
+              ? nowPlaying.artist
+              : "KUPR"}
           </h1>
 
           <p className="station__track">
-            {currentTrack.title}
+            {nowPlaying?.isOnline
+              ? nowPlaying.title
+              : "OFF AIR"}
           </p>
 
-          <RadioPlayer
-            currentTrack={currentTrack}
-            onNextTrack={handleNextTrack}
-          />
+          <RadioPlayer />
         </div>
 
         <div className="station__visualizer" aria-hidden="true">
@@ -64,9 +123,9 @@ export default function Home() {
         <span>KOTIK UNDERGROUND PIRATE RADIO</span>
 
         <div>
-          <span>192 KBPS</span>
+          <span>{nowPlaying?.bitrate ?? "—"} KBPS</span>
           <span>STEREO</span>
-          <span>4 LISTENERS</span>
+          <span>{nowPlaying?.listeners ?? "—"} LISTENERS</span>
         </div>
       </footer>
     </main>

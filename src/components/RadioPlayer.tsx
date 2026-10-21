@@ -1,54 +1,33 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import type { Track } from "@/types/track";
+import React, { useRef, useState } from "react";
 
-type PlayerState = "idle" | "connecting" | "playing" | "error";
 
-type RadioPlayerProps = {
-  currentTrack: Track;
-  onNextTrack: () => void;
-};
+type PlayerState = "idle" | "playing" | "connecting" | "error";
 
-export function RadioPlayer({
-  currentTrack,
-  onNextTrack,
-}: RadioPlayerProps) {
+const STREAM_URL = "http://57.129.178.112/listen/kotik_underground_pirate_radio_(kupr_133.7)/radio.mp3";
+
+export function RadioPlayer() {
   const audioRef = useRef<HTMLAudioElement>(null);
-
-  const [playerState, setPlayerState] =
-    useState<PlayerState>("idle");
+  const [playerState, setPlayerState] = useState<PlayerState>("idle");
 
   const isPlaying = playerState === "playing";
 
-  useEffect(() => {
-    const audio = audioRef.current;
-
-    if (!audio || !isPlaying) return;
-
-    audio.play().catch((error) => {
-      if (error.name !== "AbortError") {
-        console.error(error);
-      }
-    });
-  }, [currentTrack.src, isPlaying]);
 
   const togglePlayback = async () => {
     const audio = audioRef.current;
-
     if (!audio) return;
 
     if (!audio.paused) {
       audio.pause();
-      setPlayerState("idle");
-      return;
+      return
     }
 
     try {
       setPlayerState("connecting");
       await audio.play();
     } catch (error) {
-      console.error("Unable to start broadcast:", error);
+      console.error("Unable to connect", error);
       setPlayerState("error");
     }
   };
@@ -57,25 +36,22 @@ export function RadioPlayer({
     <div className="player">
       <audio
         ref={audioRef}
-        src={currentTrack.src}
+        src={STREAM_URL}
         preload="none"
         onPlaying={() => setPlayerState("playing")}
+        onPause={() => setPlayerState("idle")}
         onWaiting={() => setPlayerState("connecting")}
         onError={() => setPlayerState("error")}
-        onEnded={onNextTrack}
       />
-
       <button
         className="player__button"
         type="button"
         onClick={togglePlayback}
       >
-        <span>{isPlaying ? "DISCONNECT" : "TUNE IN"}</span>
+        <span>
+          {isPlaying ? "DISCONNECT" : "TUNE IN"}
+        </span>
         <span>{isPlaying ? "■" : "▶"}</span>
-      </button>
-
-      <button type="button" onClick={onNextTrack}>
-        Next
       </button>
 
       <span className="player__state">
@@ -85,5 +61,5 @@ export function RadioPlayer({
         {playerState === "error" && "SIGNAL LOST"}
       </span>
     </div>
-  );
+  )
 }
