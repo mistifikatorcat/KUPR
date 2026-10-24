@@ -9,6 +9,9 @@ const STREAM_URL = "http://57.129.178.112/listen/kotik_underground_pirate_radio_
 
 export function RadioPlayer() {
   const audioRef = useRef<HTMLAudioElement>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+
   const [playerState, setPlayerState] = useState<PlayerState>("idle");
 
   const isPlaying = playerState === "playing";
@@ -25,6 +28,18 @@ export function RadioPlayer() {
 
     try {
       setPlayerState("connecting");
+
+      if (!audioContextRef.current) {
+        const context = new AudioContext();
+        const analyser = context.createAnalyser();
+        const source = context.createMediaElementSource(audio);
+        source.connect(analyser);
+        analyser.connect(context.destination);
+        audioContextRef.current = context;
+        analyserRef.current = analyser;
+      }
+      await audioContextRef.current.resume();
+
       await audio.play();
     } catch (error) {
       console.error("Unable to connect", error);
@@ -36,6 +51,7 @@ export function RadioPlayer() {
     <div className="player">
       <audio
         ref={audioRef}
+        crossOrigin="anonymous"
         src={STREAM_URL}
         preload="none"
         onPlaying={() => setPlayerState("playing")}
