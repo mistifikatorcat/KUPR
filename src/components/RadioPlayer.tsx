@@ -4,10 +4,13 @@ import React, { useRef, useState } from "react";
 
 
 type PlayerState = "idle" | "playing" | "connecting" | "error";
+  type RadioPlayerProps = {
+    onAnalyserReady: (analyser: AnalyserNode) => void;
+  };
 
 const STREAM_URL = "http://57.129.178.112/listen/kotik_underground_pirate_radio_(kupr_133.7)/radio.mp3";
 
-export function RadioPlayer() {
+export function RadioPlayer({ onAnalyserReady,}:RadioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -37,6 +40,7 @@ export function RadioPlayer() {
         analyser.connect(context.destination);
         audioContextRef.current = context;
         analyserRef.current = analyser;
+        onAnalyserReady(analyser);
       }
       await audioContextRef.current.resume();
 

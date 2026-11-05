@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 
 import { RadioPlayer } from "@/components/RadioPlayer";
 
+import  { Oscilloscope } from "@/components/Oscilloscope";
+
 type NowPlaying = {
   artist: string;
   title: string;
@@ -14,16 +16,8 @@ type NowPlaying = {
 
 
 export default function Home() {
-  // const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
-
-  // const currentTrack = tracks[currentTrackIndex];
-
-  // const handleNextTrack = () => {
-  //   setCurrentTrackIndex((index) => (index + 1) % tracks.length);
-  // };
-
   const [nowPlaying, setNowPlaying] = useState<NowPlaying | null>(null);
-
+  const [analyser, setAnalyser] = useState<AnalyserNode | null>(null);
   const [metadataError, setMetadataError] = useState(false);
 
   useEffect(() => {
@@ -102,20 +96,11 @@ export default function Home() {
               : "OFF AIR"}
           </p>
 
-          <RadioPlayer />
+          <RadioPlayer onAnalyserReady={(analyser) => setAnalyser(analyser)} />
         </div>
 
-        <div className="station__visualizer" aria-hidden="true">
-          {Array.from({ length: 24 }).map((_, index) => (
-            <span
-              key={index}
-              style={
-                {
-                  "--i": index,
-                } as React.CSSProperties
-              }
-            />
-          ))}
+        <div className="station__visualizer" >
+          <Oscilloscope analyser={analyser} />
         </div>
       </section>
 
