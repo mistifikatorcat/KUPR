@@ -210,12 +210,25 @@ button {
   height: auto;
   margin: 0;
 }
-/* .station__visualizer span {
-  width: 100%;
-  height: var(--height);
-  background: var(--foreground);
-  opacity: 0.16;
-} */
+
+.station__awake {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  margin-top: 16px;
+
+  color: var(--muted);
+  font-family: monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+
+  cursor: pointer;
+}
+
+.station__awake input {
+  accent-color: var(--signal);
+}
 
 .station__footer {
   display: flex;

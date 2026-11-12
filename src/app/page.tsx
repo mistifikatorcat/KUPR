@@ -20,6 +20,8 @@ export default function Home() {
   const [analyser, setAnalyser] = useState<AnalyserNode | null>(null);
   const [metadataError, setMetadataError] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [keepAwake, setKeepAwake] = useState(true);
 
   const toggleFullscreen = async () => {
     try {
@@ -107,6 +109,83 @@ export default function Home() {
     }
   }, [nowPlaying]);
 
+  useEffect(() => {
+    if (!isPlaying || !keepAwake) return;
+
+    if (!("wakeLock" in navigator)) {
+      console.warn("Wake Lock is not supported");
+      return;
+    }
+
+    let wakeLock: WakeLockSentinel | null = null;
+    let requesting = false;
+    let cancelled = false;
+
+    const acquireWakeLock = async () => {
+      if (
+        cancelled ||
+        requesting ||
+        wakeLock ||
+        document.visibilityState !== "visible"
+      ) {
+        return;
+      }
+
+      requesting = true;
+
+      try {
+        const lock = await navigator.wakeLock.request("screen");
+
+        if (cancelled || document.visibilityState !== "visible") {
+          await lock.release();
+          return;
+        }
+
+        wakeLock = lock;
+        console.log("Wake Lock acquired");
+
+        lock.addEventListener("release", () => {
+          if (wakeLock === lock) {
+            wakeLock = null;
+          }
+          console.log("Wake Lock released");
+        });
+      } catch (error) {
+        console.warn("Wake Lock failed:", error);
+      } finally {
+        requesting = false;
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        void acquireWakeLock();
+      } else {
+        const lock = wakeLock;
+        wakeLock = null;
+        void lock?.release();
+      }
+    };
+
+    void acquireWakeLock();
+
+    document.addEventListener(
+      "visibilitychange",
+      handleVisibilityChange
+    );
+
+    return () => {
+      cancelled = true;
+
+      document.removeEventListener(
+        "visibilitychange",
+        handleVisibilityChange
+      );
+
+      void wakeLock?.release();
+    };
+  }, [isPlaying, keepAwake]);
+
   return (
     <main className="station">
       <header className="station__header">
@@ -159,7 +238,18 @@ export default function Home() {
               : "OFF AIR"}
           </p>
 
-          <RadioPlayer onAnalyserReady={(analyser) => setAnalyser(analyser)} />
+          <RadioPlayer
+            onAnalyserReady={setAnalyser}
+            onPlaybackChange={setIsPlaying}
+          />
+          <label className="station__awake">
+            <input
+              type="checkbox"
+              checked={keepAwake}
+              onChange={(event) => setKeepAwake(event.target.checked)}
+            />
+            KEEP DISPLAY ON
+          </label>
         </div>
 
         <div className="station__visualizer" >

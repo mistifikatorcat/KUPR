@@ -4,13 +4,14 @@ import React, { useRef, useState } from "react";
 
 
 type PlayerState = "idle" | "playing" | "connecting" | "error";
-  type RadioPlayerProps = {
-    onAnalyserReady: (analyser: AnalyserNode) => void;
-  };
+type RadioPlayerProps = {
+  onAnalyserReady: (analyser: AnalyserNode) => void;
+  onPlaybackChange: (playing: boolean) => void;
+};
 
 const STREAM_URL = "http://57.129.178.112/listen/kotik_underground_pirate_radio_(kupr_133.7)/radio.mp3";
 
-export function RadioPlayer({ onAnalyserReady,}:RadioPlayerProps) {
+export function RadioPlayer({ onAnalyserReady, onPlaybackChange }: RadioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -58,10 +59,19 @@ export function RadioPlayer({ onAnalyserReady,}:RadioPlayerProps) {
         crossOrigin="anonymous"
         src={STREAM_URL}
         preload="none"
-        onPlaying={() => setPlayerState("playing")}
-        onPause={() => setPlayerState("idle")}
+        onPlaying={() => {
+          setPlayerState("playing")
+          onPlaybackChange(true)
+        }}
+        onPause={() => {
+          setPlayerState("idle")
+          onPlaybackChange(false)
+        }}
         onWaiting={() => setPlayerState("connecting")}
-        onError={() => setPlayerState("error")}
+        onError={() => {
+          setPlayerState("error")
+          onPlaybackChange(false)
+        }}
       />
       <button
         className="player__button"
