@@ -32,7 +32,7 @@ export function Oscilloscope({ analyser }: OscilloscopeProps) {
             analyser.getByteTimeDomainData(dataArray);
             const now = performance.now();
 
-            if (now - lastLevelUpdate >= 100) {
+            if (now - lastLevelUpdate >= 60) {
                 let sumSquares = 0;
 
                 for (let i = 0; i < bufferLength; i++) {
@@ -44,7 +44,7 @@ export function Oscilloscope({ analyser }: OscilloscopeProps) {
 
                 const rawLevel = Math.min(99, rms * 200);
 
-                smoothedLevel += (rawLevel - smoothedLevel) * 0.3;
+                smoothedLevel += (rawLevel - smoothedLevel) * 0.4;
 
                 setLevel(Math.round(smoothedLevel));
                 lastLevelUpdate = now;
@@ -91,12 +91,20 @@ export function Oscilloscope({ analyser }: OscilloscopeProps) {
 
     }, [analyser]);
 
+    const getLevelColor = (level: number): string => {
+        if (level <= 30) return "#87d95b";
+        if (level <= 55) return "#f5d547";
+        if (level <= 70) return "#ff922b";
+        return "#ff4545";
+    };
+
 
     return (
         <div className="scope">
             <div className="scope__header">
                 <span>OSC / CH 01</span>
-                <span className="scope__level">
+                <span className="scope__level"
+                    style={{ color: getLevelColor(level) }}>
                     LVL {String(level).padStart(2, "0")}
                 </span>
             </div>
@@ -110,6 +118,29 @@ export function Oscilloscope({ analyser }: OscilloscopeProps) {
                 />
             </div>
 
+            <div className="scope__vu">
+                {Array.from({ length: 20 }, (_, index) => {
+                    const threshold = Math.ceil(((index + 1) * 99) / 20);
+                    const isActive = level >= threshold;
+
+                    return (
+                        <div
+                            key={index}
+                            className={`scope__led ${isActive ? "scope__led--active" : ""
+                                }`}
+                            style={{
+                                color: isActive
+                                    ? getLevelColor(threshold)
+                                    : "#343a34",
+                            }}
+                        >
+                            <div className="scope__led-bar" />
+                            <div className="scope__led-bar" />
+                        </div>
+                    );
+
+                })}
+            </div>
             <div className="scope__footer">
                 <span>TIME DOMAIN</span>
                 <span>LIVE AUDIO</span>

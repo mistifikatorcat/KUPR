@@ -262,6 +262,42 @@ button {
   color: #899985;
 }
 
+.scope__vu {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  width: 100%;
+  margin-top: 18px;
+  padding: 4px 8px 0;
+}
+
+.scope__led {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+
+  transition: color 120ms ease;
+}
+
+.scope__led::before,
+.scope__led::after {
+  content: "";
+  display: block;
+
+  height: 4px;
+  width: 100%;
+
+  background: currentColor;
+  border-radius: 2px;
+}
+
+.scope__led--active {
+  filter: drop-shadow(0 0 3px currentColor);
+}
+
 .scope__header {
   margin-bottom: 12px;
 }
@@ -367,4 +403,15 @@ button {
 
     font-size: 9px;
   }
+
+  .station__broadcast {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.station__artist {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
 }

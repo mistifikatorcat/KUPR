@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 
 import { RadioPlayer } from "@/components/RadioPlayer";
 
-import  { Oscilloscope } from "@/components/Oscilloscope";
+import { Oscilloscope } from "@/components/Oscilloscope";
 
 type NowPlaying = {
   artist: string;
@@ -60,6 +60,12 @@ export default function Home() {
     };
   }, []);
 
+  const artist = nowPlaying?.isOnline
+    ? nowPlaying.artist
+    : "KUPR";
+
+  const isLongArtist = artist.length > 25;
+
   return (
     <main className="station">
       <header className="station__header">
@@ -84,12 +90,21 @@ export default function Home() {
         <div className="station__broadcast">
           <p className="station__eyebrow">NOW TRANSMITTING</p>
 
-          <h1 className="station__artist">
-            {nowPlaying?.isOnline
-              ? nowPlaying.artist
-              : "KUPR"}
+          <h1
+            className="station__artist"
+            title={artist}
+            style={isLongArtist ? {
+              fontSize: "clamp(30px, 3vw, 52px)",
+              lineHeight: 1.05,
+              display: "-webkit-box",
+              WebkitBoxOrient: "vertical",
+              WebkitLineClamp: 3,
+              overflow: "hidden",
+              overflowWrap: "anywhere",
+            } : undefined}
+          >
+            {artist}
           </h1>
-
           <p className="station__track">
             {nowPlaying?.isOnline
               ? nowPlaying.title
