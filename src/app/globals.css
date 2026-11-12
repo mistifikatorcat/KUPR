@@ -356,16 +356,26 @@ button {
   height: 100%;
 }
 
+
 @media (max-width: 900px) {
   .station__content {
-    grid-template-columns: 1fr;
-    gap: 40px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
   }
 }
 
 @media (max-width: 700px) {
   .station {
-    padding: 20px;
+    min-height: 100dvh;
+    padding: 20px 16px max(20px, env(safe-area-inset-bottom));
+    overflow: visible;
+  }
+
+  .station__header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
   }
 
   .station__frequency {
@@ -373,43 +383,93 @@ button {
   }
 
   .station__status {
+    grid-column: 1 / -1;
+    grid-row: 2;
     font-size: 9px;
   }
 
-  .station__content {
-    justify-content: flex-end;
+  .station__fullscreen {
+    grid-column: 2;
+    grid-row: 1;
+  }
 
-    padding-bottom: 72px;
+  .station__content {
+    flex: 0 0 auto;
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    gap: 28px;
+    margin: 0;
+    padding: 36px 0 28px;
+  }
+
+  .station__broadcast {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .station__eyebrow {
+    margin-bottom: 16px;
   }
 
   .station__artist {
-    font-size: clamp(52px, 18vw, 90px);
+    max-width: 100%;
+    font-size: clamp(46px, 13vw, 78px);
+    line-height: 0.95;
+    overflow-wrap: anywhere;
   }
 
-  .station__artist--single {
-  width: 100%;
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
   .station__track {
-    margin-bottom: 32px;
+    font-size: clamp(25px, 6vw, 38px);
+    line-height: 1.1;
+    margin: 12px 0 24px;
+    overflow-wrap: anywhere;
   }
 
   .player {
-    align-items: flex-start;
+    align-items: stretch;
     flex-direction: column;
+    gap: 10px;
   }
 
   .player__button {
     width: 100%;
+    min-height: 48px;
   }
 
   .station__visualizer {
-    height: 48px;
-    margin-top: 48px;
+    width: 100%;
+    height: auto;
+    margin: 0;
+  }
+
+  .scope {
+    padding: 12px;
+  }
+
+  .scope__header,
+  .scope__footer {
+    font-size: 9px;
+    letter-spacing: 0.06em;
+  }
+
+  .scope__screen {
+    height: 140px;
+  }
+
+  .scope__vu {
+    gap: 4px;
+    margin-top: 14px;
+    padding: 4px 0 0;
+  }
+
+  .scope__led {
+    gap: 5px;
+  }
+
+  .station__footer {
+    margin-top: auto;
+    padding-top: 12px;
   }
 
   .station__footer > span {
@@ -419,38 +479,7 @@ button {
   .station__footer div {
     width: 100%;
     justify-content: space-between;
-
-    gap: 8px;
-
+    gap: 6px;
     font-size: 9px;
   }
-
-  .station__broadcast {
-  min-width: 0;
-  max-width: 100%;
-}
-
-.station__artist {
-  min-width: 0;
-  max-width: 100%;
-  overflow-wrap: anywhere;
-}
-.station__fullscreen {
-  border: 1px solid var(--line);
-  padding: 8px 12px;
-  background: transparent;
-  color: var(--muted);
-
-  font-family: monospace;
-  font-size: 11px;
-  letter-spacing: 0.1em;
-
-  cursor: pointer;
-}
-
-.station__fullscreen:hover {
-  color: var(--foreground);
-  border-color: var(--foreground);
-}
-
 }
