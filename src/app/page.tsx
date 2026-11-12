@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import { RadioPlayer } from "@/components/RadioPlayer";
 
 import { Oscilloscope } from "@/components/Oscilloscope";
+
+
 
 type NowPlaying = {
   artist: string;
@@ -23,6 +25,8 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [keepAwake, setKeepAwake] = useState(true);
 
+  const artistRef = useRef<HTMLHeadingElement>(null);
+
   const toggleFullscreen = async () => {
     try {
       if (document.fullscreenElement) {
@@ -34,6 +38,8 @@ export default function Home() {
       console.error("Fullscreen error:", error);
     }
   };
+
+
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -186,6 +192,38 @@ export default function Home() {
     };
   }, [isPlaying, keepAwake]);
 
+  useEffect(() => {
+    const element = artistRef.current;
+
+    if (!element || isLongArtist) return;
+
+    const fitText = () => {
+      // Сбрасываем размер до исходного
+      element.style.fontSize = "";
+
+      const availableWidth = element.clientWidth;
+      const textWidth = element.scrollWidth;
+
+      if (textWidth > availableWidth && availableWidth > 0) {
+        const originalSize = parseFloat(
+          getComputedStyle(element).fontSize
+        );
+
+        const ratio = availableWidth / textWidth;
+
+        element.style.fontSize =
+          `${Math.max(28, Math.floor(originalSize * ratio * 0.98))}px`;
+      }
+    };
+
+    fitText();
+
+    const observer = new ResizeObserver(fitText);
+    observer.observe(element.parentElement!);
+
+    return () => observer.disconnect();
+  }, [artist, isLongArtist]);
+
   return (
     <main className="station">
       <header className="station__header">
@@ -218,7 +256,9 @@ export default function Home() {
           <p className="station__eyebrow">NOW TRANSMITTING</p>
 
           <h1
-            className="station__artist"
+            ref={artistRef}
+            className={`station__artist ${!isLongArtist ? "station__artist--single" : ""
+              }`}
             title={artist}
             style={isLongArtist ? {
               fontSize: "clamp(30px, 3vw, 52px)",

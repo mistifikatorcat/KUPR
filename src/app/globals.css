@@ -386,6 +386,14 @@ button {
     font-size: clamp(52px, 18vw, 90px);
   }
 
+  .station__artist--single {
+  width: 100%;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
   .station__track {
     margin-bottom: 32px;
   }
