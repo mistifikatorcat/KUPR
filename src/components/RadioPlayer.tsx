@@ -9,7 +9,8 @@ type RadioPlayerProps = {
   onPlaybackChange: (playing: boolean) => void;
 };
 
-const STREAM_URL = "http://57.129.178.112/listen/kotik_underground_pirate_radio_(kupr_133.7)/radio.mp3";
+const STREAM_URL =
+  "https://radio.kupr.cc/listen/kotik_underground_pirate_radio_(kupr_133.7)/radio.mp3";
 
 export function RadioPlayer({ onAnalyserReady, onPlaybackChange }: RadioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);

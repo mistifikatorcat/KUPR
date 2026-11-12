@@ -1,6 +1,6 @@
 
 const AZURACAST_API =
-    "http://57.129.178.112/api/nowplaying/1";
+  "https://radio.kupr.cc/api/nowplaying/1";
 
 type AzuraCastResponse = {
     is_online: boolean;
