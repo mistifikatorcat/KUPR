@@ -19,6 +19,37 @@ export default function Home() {
   const [nowPlaying, setNowPlaying] = useState<NowPlaying | null>(null);
   const [analyser, setAnalyser] = useState<AnalyserNode | null>(null);
   const [metadataError, setMetadataError] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const toggleFullscreen = async () => {
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      } else {
+        await document.documentElement.requestFullscreen();
+      }
+    } catch (error) {
+      console.error("Fullscreen error:", error);
+    }
+  };
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(Boolean(document.fullscreenElement));
+    };
+
+    document.addEventListener(
+      "fullscreenchange",
+      handleFullscreenChange
+    );
+
+    return () => {
+      document.removeEventListener(
+        "fullscreenchange",
+        handleFullscreenChange
+      );
+    };
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -48,6 +79,7 @@ export default function Home() {
       }
     };
 
+
     void fetchNowPlaying();
 
     const interval = setInterval(() => {
@@ -65,6 +97,15 @@ export default function Home() {
     : "KUPR";
 
   const isLongArtist = artist.length > 25;
+
+  useEffect(() => {
+    if (nowPlaying?.isOnline) {
+      document.title =
+        `KUPR 133.7 | ${nowPlaying.artist} — ${nowPlaying.title}`;
+    } else {
+      document.title = "KUPR 133.7";
+    }
+  }, [nowPlaying]);
 
   return (
     <main className="station">
@@ -84,6 +125,13 @@ export default function Home() {
                 ? "TRANSMISSION ACTIVE"
                 : "STATION OFFLINE"}
         </div>
+        <button
+          type="button"
+          className="station__fullscreen"
+          onClick={toggleFullscreen}
+        >
+          {isFullscreen ? "EXIT FULLSCREEN" : "FULLSCREEN"}
+        </button>
       </header>
 
       <section className="station__content">

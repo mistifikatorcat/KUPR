@@ -414,4 +414,22 @@ button {
   max-width: 100%;
   overflow-wrap: anywhere;
 }
+.station__fullscreen {
+  border: 1px solid var(--line);
+  padding: 8px 12px;
+  background: transparent;
+  color: var(--muted);
+
+  font-family: monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+
+  cursor: pointer;
+}
+
+.station__fullscreen:hover {
+  color: var(--foreground);
+  border-color: var(--foreground);
+}
+
 }
